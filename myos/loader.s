@@ -17,7 +17,7 @@
 .extern kernelMain #jmp to kernelMain
 
 #lesson2
-.extern call Constructors
+.extern callConstructors
 .global loader
 
 
@@ -27,7 +27,7 @@ loader:
 	mov $kernek_stack, %esp
 
 	#lesson02
-	call Constructors
+	call callConstructors
 	push %eax
 	push %ebx
 	call kernelMain
