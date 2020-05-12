@@ -1,6 +1,6 @@
 #ifndef __GDT_H
 #define __GDT_H
-include "types.h"
+#include "types.h"
 
 //lesson 4  MemorySegment and GlobalDescriptorTable
 
@@ -21,7 +21,7 @@ public:
 		uint32_t Base();
 		uint32_t Limit();
 
-	}__attribute__(packed); //手动对齐
+	}__attribute__((packed)); //手动对齐
 
 
 	SegmentDescriptor nullSegmentSelector;
