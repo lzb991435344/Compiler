@@ -3,7 +3,7 @@
 GPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-leading-underscore
 ASPARAMS = --32
 LDPARAMS = -melf_i386
-objects = loader.o kernel.o
+objects = loader.o kernel.o gdt.o
 %.o:%.cpp
 	g++ $(GPPPARAMS) -o $@ -c $^
 %.o:%.s
@@ -16,7 +16,7 @@ install: mykernel.bin
 	sudo cp $< /boot/mykernel.bin
 
 
-#lesson 03
+#lesson 03 制作iso
 mykernel.iso:mykernel.bin
 	mkdir iso
 	mkdir iso/boot

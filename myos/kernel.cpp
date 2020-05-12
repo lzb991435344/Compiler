@@ -1,5 +1,5 @@
 #include <types.h>
-
+#include "gdt.h"
 //lesson 1
 void printf(char* str){
 
@@ -33,6 +33,9 @@ extern "C" callConstructors(){
 extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 
 	printf("Hello World!----http://www.Algorithm.de");
+
+	//lesson 4
+	GlobalDescriptorTable gdt;
 
 	while(1);
 
