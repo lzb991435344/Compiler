@@ -16,7 +16,7 @@
 */
 
 void printf(char* str);
-
+void printfHex(uint8_t);
 
 InterruptHandler::InterruptHandler(uint8_t interruptNumber, InterruptManager* interruptManager){
 	this->interruptNumber = interruptNumber;
@@ -140,11 +140,12 @@ uint32_t InterruptManager::DoHandlerInterrupt(uint8_t interruptNumber, uint32_t 
 	if(handlers[interruptNumber] != 0){
 		esp = handlers[interruptNumber]->handlerInterrupt(esp);
 	}else if(interruptNumber != 0x20){
-		char* foo = "UNHANDLER INTERRUPT 0x00";
-		char* hex = "0123456789ABCDEF";
+		printf("UNHANDLER INTERRUPT 0x");
+		printfHex(interruptNumber);
+		/*char* hex = "0123456789ABCDEF";
 		foo[22] = hex[(interruptNumber >> 4) & 0x0F];
 		foo[23] = hex[interruptNumber & 0x0F];
-		printf(foo);
+		printf(foo);*/
 	}
 	
 	/*if(ActiveInterruptManager != 0){

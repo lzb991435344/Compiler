@@ -4,7 +4,7 @@ GPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-leadi
 ASPARAMS = --32
 LDPARAMS = -melf_i386
 #CFLAGS = -Wl,-Bdynamic -lgcc_s
-objects = loader.o kernel.o port.o gdt.o interrupts.o interruptstubs.o keyboard.o mouse.o
+objects = loader.o driver.o kernel.o port.o gdt.o interrupts.o interruptstubs.o keyboard.o mouse.o
 %.o:%.cpp
 	#g++ $(GPPPARAMS) $(CFLAGS)-o $@ -c $^
 	g++ $(GPPPARAMS) -o $@ -c $^
@@ -28,7 +28,7 @@ mykernel.iso:mykernel.bin
 	echo 'set default=0' >> iso/boot/grub/grub.cfg
 	echo '' >> iso/boot/grub/grub.cfg
 	#echo 'menuentry "My Operatoring System" {' >> iso/boot/grub/grub.cfg
-	echo 'menuentry "myos" {' >> iso/boot/grub/grub.cfg
+	echo 'menuentry "mmyyooss" {' >> iso/boot/grub/grub.cfg
 	echo 'multiboot /boot/mykernel.bin' >> iso/boot/grub/grub.cfg
 	echo 'boot' >> iso/boot/grub/grub.cfg
 	echo '}' >> iso/boot/grub/grub.cfg
@@ -40,7 +40,7 @@ mykernel.iso:mykernel.bin
 run:mykernel.iso
 	(killall VirtualBox && sleep 1) || true
 	#VirtualBox --startvm "My Operatoring System" &
-	VirtualBox --startvm "myos" &
+	VirtualBox --startvm "mmyyooss" &
 
 .PHONY: clean
 clean: 
