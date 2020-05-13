@@ -28,6 +28,8 @@
 
 HandleInterruptRequest 0x00
 HandleInterruptRequest 0x01
+#lesson08
+HandleInterruptRequest 0x0C
 
 #jump to interrupt funtion
 int_bottom:

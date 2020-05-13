@@ -86,6 +86,8 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 	InterruptManager interrupts(&gdt);
 
 	keyboardDriver keyboard(&interrupts);
+	MouseDriver mouse(&interrupts);
+
 	interrupts.Activate();
 
 	while(1);
