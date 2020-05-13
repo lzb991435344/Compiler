@@ -1,5 +1,9 @@
 #include <types.h>
 #include "gdt.h"
+#include "interrupts.h"
+
+void* _Unwind_Resume = nullptr;
+void* __gxx_personality_v0 = nullptr;
 
 
 //lesson 1
@@ -42,7 +46,7 @@ void printf(char* str){
 		if(y >= 25){
 			for(y = 0; y < 25; ++y){
 				for(x = 0; x < 80; ++x){
-					VideoMemory[80*y + x] = (VideoMemory[80*y + x] & 0xFF00) | '';
+					VideoMemory[80*y + x] = (VideoMemory[80*y + x] & 0xFF00) | ' ';
 				}
 			}
 			x = 0;
@@ -75,6 +79,12 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 
 	//lesson 4
 	GlobalDescriptorTable gdt;
+
+	//lesson 06
+	//中断实例
+	InterruptManager interrupts(&gdt);
+
+	interrupts.Active();
 
 	while(1);
 
