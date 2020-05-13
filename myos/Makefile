@@ -3,10 +3,11 @@
 GPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-leading-underscore
 ASPARAMS = --32
 LDPARAMS = -melf_i386
-CFLAGS = -Wl,-Bdynamic -lgcc_s
+#CFLAGS = -Wl,-Bdynamic -lgcc_s
 objects = loader.o kernel.o port.o gdt.o interrupts.o interruptstubs.o
 %.o:%.cpp
-	g++ $(GPPPARAMS) $(CFLAGS)-o $@ -c $^
+	#g++ $(GPPPARAMS) $(CFLAGS)-o $@ -c $^
+	g++ $(GPPPARAMS) -o $@ -c $^
 %.o:%.s
 	as $(ASPARAMS) -o $@ $^
 
