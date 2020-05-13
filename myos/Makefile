@@ -4,7 +4,7 @@ GPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-leadi
 ASPARAMS = --32
 LDPARAMS = -melf_i386
 #CFLAGS = -Wl,-Bdynamic -lgcc_s
-objects = loader.o kernel.o port.o gdt.o interrupts.o interruptstubs.o
+objects = loader.o kernel.o port.o gdt.o interrupts.o interruptstubs.o keyboard.o
 %.o:%.cpp
 	#g++ $(GPPPARAMS) $(CFLAGS)-o $@ -c $^
 	g++ $(GPPPARAMS) -o $@ -c $^

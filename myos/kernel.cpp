@@ -1,6 +1,7 @@
-#include <types.h>
+#include "types.h"
 #include "gdt.h"
 #include "interrupts.h"
+#include "keyboard.h"
 
 void* _Unwind_Resume = nullptr;
 void* __gxx_personality_v0 = nullptr;
@@ -84,7 +85,8 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 	//中断实例
 	InterruptManager interrupts(&gdt);
 
-	interrupts.Active();
+	keyboardDriver keyboard(&interrupts);
+	interrupts.Activate();
 
 	while(1);
 

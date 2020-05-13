@@ -5,11 +5,34 @@
 #include "types.h"
 #include "port.h"
 #include "gdt.h"
+
+//lesson07
+
+class InterruptManager;
+
+class InterruptHandler
+{
+protected:
+	uint8_t interruptNumber;
+	InterruptManager* interruptManager;
+
+	InterruptHandler(uint8_t interruptNumber, InterruptManager* interruptManager);
+    ~InterruptHandler();
+
+public:
+	uint32_t handlerInterrupt(uint32_t esp);
+};
+
+
 class InterruptManager
 {
-
+friend class InterruptHandler;
 protected:
 
+	//lesson07
+	static InterruptManager* ActiveInterruptManager;
+	InterruptHandler* handlers[256];
+	
 	struct GateDescriptor{
 		uint16_t  handlerAddressLowBits;
 		uint16_t gdt_codeSegmentSelector;
@@ -44,8 +67,13 @@ public:
 	InterruptManager(GlobalDescriptorTable* gdt);
 	~InterruptManager();
 
-	void Active();
+	void Activate();
+	//lesson07
+	void Deactivate();
 	static uint32_t handlerInterrupt(uint8_t interruptNumber, uint32_t esp);
+	
+	//lesson07
+	uint32_t DoHandlerInterrupt(uint8_t interruptNumber, uint32_t esp);
 
 	static void IgnoreInterruptRequest();
 	static void HandleInterruptRequest0x00();
