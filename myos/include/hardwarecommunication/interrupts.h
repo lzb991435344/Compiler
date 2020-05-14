@@ -63,8 +63,8 @@ namespace myos{
 			);
 
 
-			static void InterruptIgnore();
-
+			
+			
 			static void HandleInterruptRequest0x00();
 			static void HandleInterruptRequest0x01();
 			static void HandleInterruptRequest0x02();
@@ -83,28 +83,28 @@ namespace myos{
 			static void HandleInterruptRequest0x0F();
 			static void HandleInterruptRequest0x31();
 
-			static void HandleInterruptException0x00();
-			static void HandleInterruptException0x01();
-			static void HandleInterruptException0x02();
-			static void HandleInterruptException0x03();
-			static void HandleInterruptException0x04();
-			static void HandleInterruptException0x05();
-			static void HandleInterruptException0x06();
-			static void HandleInterruptException0x07();
-			static void HandleInterruptException0x08();
-			static void HandleInterruptException0x09();
-			static void HandleInterruptException0x0A();
-			static void HandleInterruptException0x0B();
-			static void HandleInterruptException0x0C();
-			static void HandleInterruptException0x0D();
-			static void HandleInterruptException0x0E();
-			static void HandleInterruptException0x0F();
-			static void HandleInterruptException0x10();
-			static void HandleInterruptException0x11();
-			static void HandleInterruptException0x12();
-			static void HandleInterruptException0x13();
+			static void HandleException0x00();
+			static void HandleException0x01();
+			static void HandleException0x02();
+			static void HandleException0x03();
+			static void HandleException0x04();
+			static void HandleException0x05();
+			static void HandleException0x06();
+			static void HandleException0x07();
+			static void HandleException0x08();
+			static void HandleException0x09();
+			static void HandleException0x0A();
+			static void HandleException0x0B();
+			static void HandleException0x0C();
+			static void HandleException0x0D();
+			static void HandleException0x0E();
+			static void HandleException0x0F();
+			static void HandleException0x10();
+			static void HandleException0x11();
+			static void HandleException0x12();
+			static void HandleException0x13();
 
-			static myos::common::uint32_t handlerInterrupt(myos::common::uint8_t interruptNumber, myos::common::uint32_t esp);
+			static myos::common::uint32_t HandleInterrupt(myos::common::uint8_t interruptNumber, myos::common::uint32_t esp);
 			
 			//lesson07
 			myos::common::uint32_t DoHandlerInterrupt(myos::common::uint8_t interruptNumber, myos::common::uint32_t esp);
@@ -116,13 +116,13 @@ namespace myos{
 		public:
 			InterruptManager(myos::common::uint16_t hardwareInterruptOffset,  myos::GlobalDescriptorTable* globalDescriptorTable);
 			~InterruptManager();
-			myos::common::uint16_t HardwareInterruptOffset();
+			myos::common::uint16_t HardwareInterruptOffset;
 
 			void Activate();
 			//lesson07
 			void Deactivate();
 			
-
+			static void InterruptIgnore();
 			static void IgnoreInterruptRequest();
 		};
 	}

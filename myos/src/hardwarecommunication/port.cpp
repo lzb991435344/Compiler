@@ -25,17 +25,15 @@ Port8Bit::~Port8Bit(){
 
 }
 
-/**	
+
 void Port8Bit::Write(uint8_t data){
-	__asm__ volatile("outb %0, %1" :: "a"(data), "Nd"(portnumber));
+	Write8(portnumber, data);
 }
 
 uint8_t Port8Bit::Read(){
-	uint8_t result;
-	__asm__ volatile("inb %0, %1" :: "=a"(result), "Nd"(portnumber));
-	return result;
+	return Read8(portnumber);
 }
-*/
+
 
 //
 Port8BitSlow::Port8BitSlow(myos::common::uint16_t portnumber)
