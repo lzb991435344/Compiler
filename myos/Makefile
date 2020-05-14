@@ -1,14 +1,27 @@
 
 #lesson 01
-GPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-leading-underscore -Wwrite-strings
+GPPPARAMS = -m32 -Iinclude -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-leading-underscore -Wwrite-strings
 ASPARAMS = --32
 LDPARAMS = -melf_i386
 #CFLAGS = -Wl,-Bdynamic -lgcc_s
-objects = loader.o driver.o kernel.o port.o gdt.o interrupts.o interruptstubs.o keyboard.o mouse.o
-%.o:%.cpp
+objects = obj/loader.o \
+	obj/gdt.o \
+	obj/hardwarecommunication/interrupts.o \
+	obj/hardwarecommunication/port.o \
+	obj/hardwarecommunication/interruptstubs.o \
+	obj/drivers/driver.o \
+	obj/drivers/keyboard.o \
+	obj/drivers/mouse.o\
+	obj/kernel.o 
+	
+	
+obj/%.o:src/%.cpp
 	#g++ $(GPPPARAMS) $(CFLAGS)-o $@ -c $^
+	mkdir -p $(@D)
 	g++ $(GPPPARAMS) -o $@ -c $^
-%.o:%.s
+
+obj/%.o:src/%.s
+	mkdir -p $(@D)
 	as $(ASPARAMS) -o $@ $^
 
 mykernel.bin:linker.ld $(objects)
@@ -44,4 +57,5 @@ run:mykernel.iso
 
 .PHONY: clean
 clean: 
-	rm -rf $(objects) mykernel.bin mykernel.iso
+	#rm -rf $(objects) mykernel.bin mykernel.iso
+	rm -rf obj mykernel.bin mykernel.iso

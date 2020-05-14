@@ -1,7 +1,7 @@
-#include "driver.h"
+#include <drivers/driver.h>
 
-
-
+//using namespace myos::common;
+using namespace myos::drivers;
 
 Driver::Driver(){
 
@@ -13,8 +13,9 @@ Driver::~Driver(){
 void Driver::Activate(){
 
 }
-int Driver::Reset(){
 
+int Driver::Reset(){
+	return 0;
 }
 void Driver::Deactivate(){
 

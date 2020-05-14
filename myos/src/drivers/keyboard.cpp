@@ -1,8 +1,14 @@
-#include "keyboard.h"
+
+/*#include "keyboard.h"
 #include "types.h"
 #include "interrupts.h"
 #include "gdt.h"
-#include "mouse.h"
+#include "mouse.h"*/
+#include <drivers/keyboard.h>
+
+using namespace myos::common;
+using namespace myos::drivers;
+using namespace myos::hardwarecommunication;
 
 void printf(char* str);
 void printfHex(uint8_t);

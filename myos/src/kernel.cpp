@@ -1,9 +1,25 @@
-#include "types.h"
-#include "gdt.h"
-#include "interrupts.h"
-#include "keyboard.h"
-#include "driver.h"
-#include "mouse.h"
+//#include "types.h"
+//#include "gdt.h"
+//#include "interrupts.h"
+//#include "keyboard.h"
+//#include "driver.h"
+//#include "mouse.h"
+
+
+#include <drivers/driver.h>
+#include <drivers/keyboard.h>
+#include <drivers/mouse.h>
+#include <common/types.h>
+#include <hardwarecommunication/interrupts.h>
+#include <gdt.h>
+//#include "gdt.h"
+
+using namespace myos;
+using namespace myos::common;
+using namespace myos::drivers;
+using namespace myos::hardwarecommunication;
+
+
 
 void* _Unwind_Resume = nullptr;
 void* __gxx_personality_v0 = nullptr;
@@ -154,8 +170,8 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 
 	//lesson 06
 	//中断实例
-	//InterruptManager interrupts(0x20, &gdt);
-	InterruptManager interrupts(&gdt);
+	InterruptManager interrupts(0x20, &gdt);
+	//InterruptManager interrupts(&gdt);
 
 	printf("Initializing Hardware, Stage 1\n");
 

@@ -1,5 +1,9 @@
-#include "interrupts.h"
+//#include "interrupts.h"
+#include <hardwarecommunication/interrupts.h>
 
+using namespace myos::common;
+//using namespace myos::drivers;
+using namespace myos::hardwarecommunication;
 
 //lesson 06
 
@@ -59,13 +63,13 @@ InterruptManager* InterruptManager::ActiveInterruptManager = 0;
 }
 
 
-InterruptManager::InterruptManager(GlobalDescriptorTable* gdt)
-:picMasterCommand(0x20),
-picMasterData(0x21),
-picSlaveCommand(0xA0),
-picSlaveData(0xA1)
+InterruptManager::InterruptManager(myos::common::uint16_t hardwareInterruptOffset,  myos::GlobalDescriptorTable* globalDescriptorTable)
+:programInterruptControllerMasterCommand(0x20),
+programInterruptControllerMasterData(0x21),
+programInterruptControllerSlaveCommand(0xA0),
+programInterruptControllerSlaveData(0xA1)
 {
-	uint32_t CodeSegment = gdt->CodeSegmentSelector();
+	uint32_t CodeSegment = globalDescriptorTable->CodeSegmentSelector();
 	const uint8_t IDT_INTERRUPT_GATE = 0xE;
 
 	for(uint16_t i = 0; i < 256; ++i){
@@ -77,20 +81,20 @@ picSlaveData(0xA1)
 	setInterruptDescriptorTableEntry(0x21, CodeSegment, &HandleInterruptRequest0x01, 0, IDT_INTERRUPT_GATE);
 	setInterruptDescriptorTableEntry(0x2C, CodeSegment, &HandleInterruptRequest0x01, 0, IDT_INTERRUPT_GATE);
 
-	picMasterCommand.Write(0x11);
-	picSlaveCommand.Write(0x11);
+	programInterruptControllerMasterCommand.Write(0x11);
+	programInterruptControllerSlaveCommand.Write(0x11);
 
-	picMasterData.Write(0x20);
-	picSlaveData.Write(0x28);//why?20-27  28-30
+	programInterruptControllerMasterData.Write(0x20);
+	programInterruptControllerSlaveData.Write(0x28);//why?20-27  28-30
 
-	picMasterData.Write(0x04);
-	picSlaveData.Write(0x02);//why?20-27  28-30
+	programInterruptControllerMasterData.Write(0x04);
+	programInterruptControllerSlaveData.Write(0x02);//why?20-27  28-30
 
-	picMasterData.Write(0x01);
-	picSlaveData.Write(0x01);//why?20-27  28-30
+	programInterruptControllerMasterData.Write(0x01);
+	programInterruptControllerSlaveData.Write(0x01);//why?20-27  28-30
 
-	picMasterData.Write(0x00);
-	picSlaveData.Write(0x00);//why?20-27  28-30
+	programInterruptControllerMasterData.Write(0x00);
+	programInterruptControllerSlaveData.Write(0x00);//why?20-27  28-30
 
 	InterruptDescriptorTablePointer idt;
 	idt.size = 256 *sizeof(GateDescriptor) - 1;
@@ -153,10 +157,11 @@ uint32_t InterruptManager::DoHandlerInterrupt(uint8_t interruptNumber, uint32_t 
 	}*/
 	
 	if(0x20 <= interruptNumber && interruptNumber < 0x30){
-		picMasterCommand.Write(0x20);
+		
+		programInterruptControllerMasterCommand.Write(0x20);
 
 		if(0x28 <= interruptNumber ){
-			picSlaveCommand.Write(0x20);
+			programInterruptControllerSlaveCommand.Write(0x20);
 		}
 	}
 
