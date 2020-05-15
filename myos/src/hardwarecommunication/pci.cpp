@@ -8,11 +8,11 @@ void printf(char* str);
 void printfHex(uint8_t);
 
 
-PeripherComponentInterController::PeripherComponentInterController(){
+PeripherComponentInterconnectDeviceDescriptor::PeripherComponentInterconnectDeviceDescriptor(){
 
 }
 
-PeripherComponentInterController::~PeripherComponentInterController(){
+PeripherComponentInterconnectDeviceDescriptor::~PeripherComponentInterconnectDeviceDescriptor(){
 
 }
 
@@ -57,14 +57,14 @@ bool PeripherComponentInterController::DeviceHasFunctions(common::uint16_t bus, 
 	return Read(bus, device, 0, 0x0E) & (1 << 7);
 }
 
-void PeripherComponentInterController::SelectDrivers(DriverManager* driverManager){
-	for(int bus = 0; bus < 8; ++i){
+void PeripherComponentInterController::SelectDrivers(myos::drivers::DriverManager* driverManager){
+	for(int bus = 0; bus < 8; ++bus){
 		for(int device = 0 ; device < 32; ++device){
 			int numFunctions = DeviceHasFunctions(bus, device) ? 8 : 1;
-			for(int functions = 0; functions < numFunctions; ++function){
+			for(int function = 0; function < numFunctions; ++function){
 				PeripherComponentInterconnectDeviceDescriptor dev = GetDeviceDescriptor(bus, device, function);
 				
-				if(device.vendor_id == 0x0000 || device.vendor_id == 0xFFFF){
+				if(dev.vendor_id == 0x0000 || dev.vendor_id == 0xFFFF){
 					break;
 				}
 

@@ -1,4 +1,4 @@
-#include __MYOS_PCI_H
+#ifndef __MYOS_PCI_H
 #define __MYOS_PCI_H
 
 #include <hardwarecommunication/port.h>
@@ -22,7 +22,7 @@ namespace myos{
 
 			common::uint16_t bus;
 			common::uint16_t device;
-			common::uint16_t funtion;
+			common::uint16_t function;
 
 			common::uint16_t vendor_id;
 			common::uint16_t device_id;
@@ -55,7 +55,7 @@ namespace myos{
 			bool DeviceHasFunctions(common::uint16_t bus, common::uint16_t device);	
 
 			//select drivers
-			void SelectDrivers(myos::DriverManager* driverManager);
+			void SelectDrivers(myos::drivers::DriverManager* driverManager);
 
 			PeripherComponentInterconnectDeviceDescriptor GetDeviceDescriptor(common::uint16_t bus, common::uint16_t device, common::uint16_t function);
 		};	
