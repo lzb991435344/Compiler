@@ -1,11 +1,20 @@
 
 #include <hardwarecommunication/pci.h>
+#include <drivers/driver.h>
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
 
 
 void printf(char* str);
 void printfHex(uint8_t);
+
+
+BaseAddressRegister::BaseAddressRegister(){
+
+}
+BaseAddressRegister::~BaseAddressRegister(){
+	
+}
 
 
 PeripherComponentInterconnectDeviceDescriptor::PeripherComponentInterconnectDeviceDescriptor(){
@@ -28,12 +37,7 @@ PeripherComponentInterController::~PeripherComponentInterController(){
 
 uint32_t PeripherComponentInterController::Read(uint16_t bus, uint16_t device, uint16_t function, 
 		uint32_t registeroffset){
-	uint32_t id = 
-	 0x1 << 31
-	| ((bus & 0xFF) << 16)
-	| ((device & 0x1F) << 11)
-	| ((function & 0x07) << 8)
-	|(registeroffset & 0xFC);
+	uint32_t id = (0x1 << 31) | ((bus & 0xFF) << 16) | ((device & 0x1F) << 11)| ((function & 0x07) << 8)|(registeroffset & 0xFC);
 
 	commandPort.Write(id);
 	uint32_t result = dataPort.Read();
@@ -53,11 +57,11 @@ uint32_t PeripherComponentInterController::Write(uint16_t bus, uint16_t device, 
 	dataPort.Write(value);
 }
 
-bool PeripherComponentInterController::DeviceHasFunctions(common::uint16_t bus, common::uint16_t device){
+bool PeripherComponentInterController::DeviceHasFunctions(myos::common::uint16_t bus, myos::common::uint16_t device){
 	return Read(bus, device, 0, 0x0E) & (1 << 7);
 }
 
-void PeripherComponentInterController::SelectDrivers(myos::drivers::DriverManager* driverManager){
+void PeripherComponentInterController::SelectDrivers(myos::drivers::DriverManager* driverManager, myos::hardwarecommunication::InterruptManager* interruptManager){
 	for(int bus = 0; bus < 8; ++bus){
 		for(int device = 0 ; device < 32; ++device){
 			int numFunctions = DeviceHasFunctions(bus, device) ? 8 : 1;
@@ -65,8 +69,28 @@ void PeripherComponentInterController::SelectDrivers(myos::drivers::DriverManage
 				PeripherComponentInterconnectDeviceDescriptor dev = GetDeviceDescriptor(bus, device, function);
 				
 				if(dev.vendor_id == 0x0000 || dev.vendor_id == 0xFFFF){
-					break;
+					//break;
+
+					// cat pci message
+					//lspci -n 
+					//lspi -x
+					continue;
 				}
+
+				//baseaddressregister
+				for(int barNum = 0; barNum < 6; ++barNum){
+					BaseAddressRegister bar = GetBaseAddressRegister(bus, device, function, barNum);
+					
+					if(bar.address &&(bar.type == InputOutput)){
+						dev.portBase = (uint32_t)bar.address;
+					}
+					myos::drivers::Driver* driver = GetDriver(dev, interruptManager);
+					if(driver != 0){
+						 driverManager->AddDriver(driver);
+					}
+				}
+
+
 
 				printf("PCI BUS");
 				printfHex(bus & 0xFF);
@@ -92,9 +116,84 @@ void PeripherComponentInterController::SelectDrivers(myos::drivers::DriverManage
 }
 
 
+
+myos::drivers::Driver* PeripherComponentInterController::GetDriver(PeripherComponentInterconnectDeviceDescriptor dev,  myos::hardwarecommunication::InterruptManager* interruptManager){
+	
+	switch(dev.vendor_id){
+		case 0x1022://AMD
+			switch(dev.device_id){
+				case 0x2000://am79c973
+					printf("AMD am79c973");
+					break;
+			}
+		break;
+
+		case 8086://Intel
+
+		break;
+
+	}
+
+	switch(dev.class_id){
+		case 0x03://graphics
+			switch(dev.subclass_id){
+				case 0x00://VGA
+				break;
+			}
+		break;
+	}
+
+	return 0;
+}
+
+
+BaseAddressRegister PeripherComponentInterController::GetBaseAddressRegister(uint16_t bus, myos::common::uint16_t device, uint16_t function, uint16_t bar){
+	BaseAddressRegister result;
+
+	uint32_t headertype = Read(bus, device, function, 0x0E) & 0x7F;
+	int MaxBARS = 6 - (4 * headertype);
+
+	if(bar > MaxBARS){
+		return result;
+	}
+
+	/**
+		00:03.0 Ethernet controller: Red Hat, Inc. Virtio network device
+		00: f4 1a 00 10 07 04 10 00 00 00 00 02 00 00 00 00
+		10: 61 c0 00 00 00 10 bf fe 00 00 00 00 00 00 00 00
+		20: 00 00 00 00 00 00 00 00 00 00 00 00 f4 1a 01 00
+		30: 00 00 be fe 40 00 00 00 00 00 00 00 0b 01 00 00
+
+	*/
+	uint32_t bar_value = Read(bus, device, function, 0x10 + 4*bar);
+	result.type = (bar_value & 0x01) ?InputOutput:MemoryMapping;
+
+	uint32_t temp;
+	if(result.type = MemoryMapping){
+		switch((bar_value >> 1) & 0x3){
+			//32 Bit Mode
+			case 0:
+
+			//20 Bit Mode  
+			case 1:
+
+			//64 Bit Mode
+			case 2:
+			break;
+
+		}
+	}else{//IntputOutput
+
+		result.address = (uint8_t*)(bar_value & ~0x3);
+		result.prefetchanble = false;
+	}
+
+	return result;
+}
+
 //47
-PeripherComponentInterconnectDeviceDescriptor PeripherComponentInterController::GetDeviceDescriptor(common::uint16_t bus,
-	common::uint16_t device, common::uint16_t function){
+PeripherComponentInterconnectDeviceDescriptor PeripherComponentInterController::GetDeviceDescriptor(myos::common::uint16_t bus,
+	myos::common::uint16_t device, myos::common::uint16_t function){
 
 	PeripherComponentInterconnectDeviceDescriptor result;
 
