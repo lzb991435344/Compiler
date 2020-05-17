@@ -13,6 +13,7 @@ objects = obj/loader.o \
 	obj/drivers/driver.o \
 	obj/drivers/keyboard.o \
 	obj/drivers/mouse.o\
+	obj/drivers/vga.o\
 	obj/kernel.o 
 	
 	
