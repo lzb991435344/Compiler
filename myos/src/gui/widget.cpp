@@ -12,6 +12,8 @@ Widget::Widget(Widget* parent, uint8_t x, uint8_t y,
 	this->r = r;
 	this->g = g;
 	this->b = b;
+
+	this->Focusable = true;
 }
 
 Widget::~Widget(){
@@ -35,12 +37,17 @@ void Widget::ModelToScreen(uint32_t &x, uint32_t &y){
 
 
 void Widget::Draw(GraphicsContex* gc){
-
+	int X = 0;
+	int Y = 0;
+	ModelToScreen(X, Y);
+	gc->FileRectangle(X, Y, w, h, r, g, b);
 }
 
 
 void Widget::OnMouseDown(uint32_t x, uint32_t y){
-
+	if(Focusable){
+		GetFocus(this);
+	}
 }
 
 
