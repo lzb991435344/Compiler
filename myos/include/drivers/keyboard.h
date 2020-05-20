@@ -15,7 +15,7 @@ namespace myos {
 		public:
 			KeyboardEventHandler();
 
-
+			
 			virtual void OnKeyDown(char);
 			virtual void OnKeyUp(char);
 		};

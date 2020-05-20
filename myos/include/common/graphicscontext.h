@@ -4,7 +4,7 @@
 namespace myos{
 
 	namespace common{
-		typedef GraphicsContext VideoGraphicsArray;
+		typedef  myos::drivers::VideoGraphicsArray GraphicsContext;
 	}
 }
 

@@ -4,7 +4,7 @@
 
 using namespace myos::common;
 using namespace myos::drivers;
-using namespace myos:hardwarecommunication;
+using namespace myos::hardwarecommunication;
 
 
 VideoGraphicsArray::VideoGraphicsArray()
@@ -72,15 +72,28 @@ void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, 
 	PutPixel(x, y , GetColorIndex(r, g, b));
 }
 uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b){
-	if((r == 0x00, g == 0x00, b == 0xA8)){
-		return 0x01;
+	if((r == 0x00 && g == 0x00 && b == 0x00)){
+		return 0x00;//black
 	}
+	if((r == 0x00 && g == 0x00 && b == 0xA8)){
+		return 0x01;//blue
+	}
+	if((r == 0x00 && g == 0xA8 && b == 0x00)){
+		return 0x02;//green
+	}
+	if((r == 0xA8 && g == 0x00 && b == 0x00)){
+		return 0x04;//red
+	}
+	if((r == 0xFF && g == 0xFF && b == 0xA8)){
+		return 0x3F;//white
+	}
+	return 0x00;
 }
 
-
+//使用颜色填充屏幕区域
 void VideoGraphicsArray::FillRectangle(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint8_t r, uint8_t g, uint8_t b){
-		for(int int32_t Y = y; Y < y + h; ++Y){
-			for(int32_t X = x; X < x + w; ++X){
+		for(uint32_t Y = y; Y < y + h; ++Y){
+			for(uint32_t X = x; X < x + w; ++X){
 				PutPixel(X, Y, r, g, b);
 			}
 		}
