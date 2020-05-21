@@ -16,6 +16,7 @@ objects = obj/loader.o \
 	obj/drivers/vga.o\
 	obj/gui/widget.o\
 	obj/gui/window.o\
+	obj/gui/destop.o\
 	obj/kernel.o 
 	
 	

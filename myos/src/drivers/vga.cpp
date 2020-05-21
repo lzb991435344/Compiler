@@ -1,7 +1,6 @@
 
 
 #include <drivers/vga.h>
-
 using namespace myos::common;
 using namespace myos::drivers;
 using namespace myos::hardwarecommunication;
@@ -61,14 +60,19 @@ bool VideoGraphicsArray::SupportsMode(int64_t width, int64_t height, uint32_t co
 	return width == 320 && height == 200 && colordepth == 8; 
 }
 
-void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t colorIndex){
+void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t colorIndex){
+	
+	if(x < 0 || 320 <= x
+		|| y < 0 || 200 < y){
+			return;
+	}
 	uint8_t* pixelAddress = GetFrameBufferSegment() + 320*y + x;	
 	*pixelAddress = colorIndex;
 
 }
 
 
-void VideoGraphicsArray::PutPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b){
+void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t r, uint8_t g, uint8_t b){
 	PutPixel(x, y , GetColorIndex(r, g, b));
 }
 uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b){

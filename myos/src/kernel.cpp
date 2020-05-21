@@ -15,13 +15,15 @@
 #include <gdt.h>
 
 #include <drivers/vga.h>
+#include <common/graphicscontext.h>
+#include <gui/destop.h>
 //#include "gdt.h"
 
 using namespace myos;
 using namespace myos::common;
 using namespace myos::drivers;
 using namespace myos::hardwarecommunication;
-
+using namespace myos::gui;
 
 
 void* _Unwind_Resume = nullptr;
@@ -171,6 +173,9 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 	//lesson 4
 	GlobalDescriptorTable gdt;
 
+	//for test
+	//Destop destop(320, 220, 0x00, 0x00, 0xA8);
+
 	//lesson 06
 	//中断实例
 	InterruptManager interrupts(0x20, &gdt);
@@ -187,6 +192,8 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 	MouseToConsole mousehandler;
 	MouseDriver mouse(&interrupts, &mousehandler);
 
+	//for test
+	//MouseDriver mouse(&interrupts, &destop);
 	drvManager.AddDriver(&mouse);
 
 
@@ -203,6 +210,10 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 
 	vga.SetMode(320, 200, 8);
 	
+
+	Destop destop(320, 220, 0x00, 0x00, 0xA8);
+	destop.Draw(&vga);	
+
 	/**for(uint32_t y = 0; y <= 200; ++y){
 		for(uint32_t x = 0; x <= 320; ++x ){
 			vga.PutPixel(x, y, 0x00, 0x00, 0xA8);

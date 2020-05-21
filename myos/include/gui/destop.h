@@ -3,7 +3,7 @@
 
 #include <gui/widget.h>
 #include <drivers/mouse.h>
-
+#include <common/types.h>
 
 namespace myos{
 	namespace gui{
@@ -17,7 +17,7 @@ namespace myos{
 				myos::common::uint8_t r, myos::common::uint8_t g, myos::common::uint8_t b);
 			~Destop();
 
-			void Draw(myos::common::GraphicsContex* gc);
+			void Draw(myos::common::GraphicsContext* gc);
 
 			void OnMouseDown(myos::common::uint8_t button);
 			void OnMouseUp(myos::common::uint8_t button);
