@@ -17,6 +17,7 @@
 #include <drivers/vga.h>
 #include <common/graphicscontext.h>
 #include <gui/destop.h>
+#include <gui/window.h>
 //#include "gdt.h"
 
 using namespace myos;
@@ -174,8 +175,10 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 	GlobalDescriptorTable gdt;
 
 	//for test
-	//Destop destop(320, 220, 0x00, 0x00, 0xA8);
 
+#ifdef GRAPHICSMODE
+	Destop destop(320, 220, 0x00, 0x00, 0xA8);
+#endif	
 	//lesson 06
 	//中断实例
 	InterruptManager interrupts(0x20, &gdt);
@@ -184,16 +187,27 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 	printf("Initializing Hardware, Stage 1\n");
 
 	DriverManager drvManager;
+
+#ifdef GRAPHICSMODE
+	keyboardDriver keyboard(&interrupts, &destop);
+#else	
 	PrintKeyboardEventHandler kbhandler;
 	keyboardDriver keyboard(&interrupts, &kbhandler);
+
+#endif
 	//lesson 09
 	drvManager.AddDriver(&keyboard);
 
-	MouseToConsole mousehandler;
-	MouseDriver mouse(&interrupts, &mousehandler);
 
 	//for test
-	//MouseDriver mouse(&interrupts, &destop);
+
+#ifdef GRAPHICSMODE	
+	MouseDriver mouse(&interrupts, &destop);
+#else	
+	MouseToConsole mousehandler;
+	MouseDriver mouse(&interrupts, &mousehandler);
+#endif	
+
 	drvManager.AddDriver(&mouse);
 
 
@@ -206,13 +220,10 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 	drvManager.ActivateAll();
 
 	printf("Initializing Hardware, Stage 3\n");
-	interrupts.Activate();
-
-	vga.SetMode(320, 200, 8);
 	
 
-	Destop destop(320, 220, 0x00, 0x00, 0xA8);
-	destop.Draw(&vga);	
+	//Destop destop(320, 220, 0x00, 0x00, 0xA8);
+	//destop.Draw(&vga);	
 
 	/**for(uint32_t y = 0; y <= 200; ++y){
 		for(uint32_t x = 0; x <= 320; ++x ){
@@ -220,9 +231,22 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 		}
 	}*/
 
-	vga.FillRectangle(0, 0, 320, 200, 0x00, 0x00, 0xA8);
 
-	while(1);
+#ifdef GRAPHICSMODE	
+	vga.SetMode(320, 200, 8);
+		
+	//vga.FillRectangle(0, 0, 320, 200, 0x00, 0x00, 0xA8);
+	Window window1(&destop, 10, 10, 20, 20, 0xA8, 0x00, 0x00);
+	destop.AddChild(&destop);
+	Window window2(&destop, 40, 15, 30, 30, 0x00, 0xA8, 0x00);
+	destop.AddChild(&destop);
+#endif
+
+
+	interrupts.Activate();
+	while(1){
+		//destop.Draw(&vga);
+	}
 
 }
 
