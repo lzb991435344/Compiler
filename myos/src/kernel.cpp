@@ -18,6 +18,7 @@
 #include <common/graphicscontext.h>
 #include <gui/destop.h>
 #include <gui/window.h>
+#include <multitasking.h>
 //#include "gdt.h"
 
 using namespace myos;
@@ -89,6 +90,23 @@ void printfHex(uint8_t key){
 	foo[23] = hex[key & 0x0F];
 	printf(foo);
 }
+
+
+//for multitasking test
+
+void taskA(){
+	while(true){
+		printf("A");
+	}
+}
+
+void taskB(){
+	while(true){
+		printf("B");
+	}
+}
+
+
 
 
 //lesson 02
@@ -165,6 +183,10 @@ public:
 
 
 
+
+
+
+
 // linux--printf--glibc  lesson1
 extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 
@@ -174,15 +196,25 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 	//lesson 4
 	GlobalDescriptorTable gdt;
 
+
+
+	TaskManager taskManager;
+	Task task1(&gdt, taskA);
+	Task task2(&gdt, taskB);
+	taskManager.AddTask(&task1);
+	taskManager.AddTask(&task2);
+
+
+	//lesson 06
+	//中断实例
+	InterruptManager interrupts(0x20, &gdt, &taskManager);
+	//InterruptManager interrupts(&gdt);
 	//for test
 
 #ifdef GRAPHICSMODE
 	Destop destop(320, 220, 0x00, 0x00, 0xA8);
 #endif	
-	//lesson 06
-	//中断实例
-	InterruptManager interrupts(0x20, &gdt);
-	//InterruptManager interrupts(&gdt);
+	
 
 	printf("Initializing Hardware, Stage 1\n");
 
@@ -245,7 +277,9 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
 
 	interrupts.Activate();
 	while(1){
-		//destop.Draw(&vga);
+		#ifdef GRAPHICSMODE
+			destop.Draw(&vga);
+		#endif
 	}
 
 }

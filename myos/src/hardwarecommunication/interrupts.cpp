@@ -1,6 +1,8 @@
 //#include "interrupts.h"
 #include <hardwarecommunication/interrupts.h>
 
+
+using namespace myos;
 using namespace myos::common;
 //using namespace myos::drivers;
 using namespace myos::hardwarecommunication;
@@ -63,12 +65,14 @@ InterruptManager* InterruptManager::ActiveInterruptManager = 0;
 }
 
 
-InterruptManager::InterruptManager(myos::common::uint16_t hardwareInterruptOffset,  myos::GlobalDescriptorTable* globalDescriptorTable)
+InterruptManager::InterruptManager(myos::common::uint16_t hardwareInterruptOffset,  myos::GlobalDescriptorTable* globalDescriptorTable,
+	TaskManager* taskManager)
 :programInterruptControllerMasterCommand(0x20),
 programInterruptControllerMasterData(0x21),
 programInterruptControllerSlaveCommand(0xA0),
 programInterruptControllerSlaveData(0xA1)
 {
+	this->taskManager = taskManager;
 	this->HardwareInterruptOffset = hardwareInterruptOffset;
 	uint32_t CodeSegment = globalDescriptorTable->CodeSegmentSelector();
 	const uint8_t IDT_INTERRUPT_GATE = 0xE;
@@ -185,13 +189,19 @@ uint32_t InterruptManager::DoHandlerInterrupt(uint8_t interruptNumber, uint32_t 
 
 	if(handlers[interruptNumber] != 0){
 		esp = handlers[interruptNumber]->handlerInterrupt(esp);
-	}else if(interruptNumber != 0x20){
+	}//else if(interruptNumber != 0x20){
+	else if(interruptNumber != HardwareInterruptOffset){
 		printf("UNHANDLER INTERRUPT 0x");
 		printfHex(interruptNumber);
 		/*char* hex = "0123456789ABCDEF";
 		foo[22] = hex[(interruptNumber >> 4) & 0x0F];
 		foo[23] = hex[interruptNumber & 0x0F];
 		printf(foo);*/
+	}
+
+	//set esp
+	if(interruptNumber == HardwareInterruptOffset){
+		esp = (uint32_t)taskManager->Schedule((CPUState*) esp);
 	}
 	
 	/*if(ActiveInterruptManager != 0){
