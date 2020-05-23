@@ -94,17 +94,21 @@ void PeripherComponentInterController::SelectDrivers(myos::drivers::DriverManage
 
 				printf("PCI BUS");
 				printfHex(bus & 0xFF);
+				printf("\n");
 
 				printf(" , DEVICE");
 				printfHex(device & 0xFF);
+				printf("\n");
 
 				printf(" , FUNCTION");
 				printfHex(function & 0xFF);
+				printf("\n");
 
 
 				printf(" = VENTOR");
 				printfHex((dev.vendor_id & 0xFF00) >> 8 );
 				printfHex(dev.vendor_id & 0xFF);
+				printf("\n");
 
 				printf(" , DEVICE");
 				printfHex((dev.device_id & 0xFF00) >> 8);

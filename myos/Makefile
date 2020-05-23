@@ -6,6 +6,7 @@ LDPARAMS = -melf_i386
 #CFLAGS = -Wl,-Bdynamic -lgcc_s
 objects = obj/loader.o \
 	obj/gdt.o \
+	obj/memorymanagerment.o\
 	obj/hardwarecommunication/interrupts.o \
 	obj/hardwarecommunication/port.o \
 	obj/hardwarecommunication/interruptstubs.o \

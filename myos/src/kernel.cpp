@@ -19,7 +19,7 @@
 #include <gui/destop.h>
 #include <gui/window.h>
 #include <multitasking.h>
-//#include "gdt.h"
+#include <memorymanagerment.h>
 
 using namespace myos;
 using namespace myos::common;
@@ -188,22 +188,42 @@ public:
 
 
 // linux--printf--glibc  lesson1
-extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber){
+extern "C" void kernelMain(const void* multiboot_structure, unsigned int magicnumber){
 
-	printf("Hello World!----http://www.Algorithm.de");
+	printf("Hello World!----http://www.Algorithm.de\n");
 	
 
 	//lesson 4
 	GlobalDescriptorTable gdt;
 
 
+	//see the struc multibootinfo 
+	//https://blog.csdn.net/wuhui_gdnt/article/details/6647758
+	uint32_t* memupper = (uint32_t*)(((size_t)multiboot_structure) + 8);
+	size_t heap = 10*1024*1024;
+	MemoryManage memoryManager(heap, (*memupper)* 1024 - heap - 10*1024);
+
+	printf("heap:0x");
+	printfHex((heap >> 24) & 0xFF);
+	printfHex((heap >> 16) & 0xFF);
+	printfHex((heap >> 8)  & 0xFF);
+	printfHex((heap )  & 0xFF);
+	printf("\n");
+
+
+	void* allocated = memoryManager.malloc(1024);
+	printf("heap:0x");
+	printfHex((((size_t)allocated) >> 16) & 0xFF);
+	printfHex((((size_t)allocated) >> 16) & 0xFF);
+	printfHex((((size_t)allocated) >> 8)  & 0xFF);
+	printfHex(((size_t)allocated)  & 0xFF);
+	printf("\n");
 
 	TaskManager taskManager;
-	Task task1(&gdt, taskA);
+	/*Task task1(&gdt, taskA);
 	Task task2(&gdt, taskB);
 	taskManager.AddTask(&task1);
-	taskManager.AddTask(&task2);
-
+	taskManager.AddTask(&task2);*/
 
 	//lesson 06
 	//中断实例
