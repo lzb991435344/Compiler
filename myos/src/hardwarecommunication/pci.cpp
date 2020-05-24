@@ -1,8 +1,11 @@
 
 #include <hardwarecommunication/pci.h>
 #include <drivers/driver.h>
+#include <drivers/amd_am79c973.h>
+
 using namespace myos::common;
 using namespace myos::hardwarecommunication;
+using namespace myos::drivers;
 
 
 void printf(char* str);
@@ -83,14 +86,14 @@ void PeripherComponentInterController::SelectDrivers(myos::drivers::DriverManage
 					
 					if(bar.address &&(bar.type == InputOutput)){
 						dev.portBase = (uint32_t)bar.address;
-					}
-					myos::drivers::Driver* driver = GetDriver(dev, interruptManager);
+					}					
+				}
+
+				//it only need a driver
+				myos::drivers::Driver* driver = GetDriver(dev, interruptManager);
 					if(driver != 0){
 						 driverManager->AddDriver(driver);
 					}
-				}
-
-
 
 				printf("PCI BUS");
 				printfHex(bus & 0xFF);
@@ -121,13 +124,21 @@ void PeripherComponentInterController::SelectDrivers(myos::drivers::DriverManage
 
 
 
-myos::drivers::Driver* PeripherComponentInterController::GetDriver(PeripherComponentInterconnectDeviceDescriptor dev,  myos::hardwarecommunication::InterruptManager* interruptManager){
+myos::drivers::Driver* PeripherComponentInterController::GetDriver(PeripherComponentInterconnectDeviceDescriptor dev, 
+ myos::hardwarecommunication::InterruptManager* interruptManager){
 	
+	myos::drivers::Driver* driver = 0;
 	switch(dev.vendor_id){
 		case 0x1022://AMD
 			switch(dev.device_id){
 				case 0x2000://am79c973
-					printf("AMD am79c973");
+					//driver = new (amd_am79c973*)MemoryManage::activeMemoryManager->malloc(sizeof(amd_am79c973));
+					driver = (Driver*)MemoryManage::activeMemoryManager->malloc(sizeof(amd_am79c973));
+					if(driver != 0){
+						new (driver)amd_am79c973(&dev, interruptManager);
+					}
+					return driver;
+					printf("AMD am79c973\n");
 					break;
 			}
 		break;
@@ -147,7 +158,7 @@ myos::drivers::Driver* PeripherComponentInterController::GetDriver(PeripherCompo
 		break;
 	}
 
-	return 0;
+	return driver;
 }
 
 

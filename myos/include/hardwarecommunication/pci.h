@@ -5,7 +5,8 @@
 #include <common/types.h>
 #include <hardwarecommunication/interrupts.h>
 #include <drivers/driver.h>
-
+//#include <drivers/amd_am79c973.h>
+#include <memorymanagerment.h>
 
 namespace myos{
 
@@ -79,7 +80,7 @@ namespace myos{
 			//select drivers
 			void SelectDrivers(myos::drivers::DriverManager* driverManager, myos::hardwarecommunication::InterruptManager* interruptManager);
 
-			myos::drivers::Driver* GetDriver(PeripherComponentInterconnectDeviceDescriptor peripherComponentInterconnectDeviceDescriptor,  myos::hardwarecommunication::InterruptManager* interruptManager);
+			myos::drivers::Driver* GetDriver(PeripherComponentInterconnectDeviceDescriptor dev,  myos::hardwarecommunication::InterruptManager* interruptManager);
 			PeripherComponentInterconnectDeviceDescriptor GetDeviceDescriptor(myos::common::uint16_t bus, myos::common::uint16_t device, myos::common::uint16_t function);
 			BaseAddressRegister GetBaseAddressRegister(myos::common::uint16_t bus, myos::common::uint16_t device, myos::common::uint16_t function, myos::common::uint16_t bar);
 		};	

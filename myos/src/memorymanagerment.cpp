@@ -89,3 +89,36 @@ void MemoryManage::free(void* ptr){
 		} 
 	}
 }
+
+void* operator new(unsigned size){
+	if(myos::MemoryManage::activeMemoryManager == 0){
+		return 0;
+	}
+	return myos::MemoryManage::activeMemoryManager->malloc(size);
+}
+void* operator new[](unsigned size){
+	if(myos::MemoryManage::activeMemoryManager == 0){
+		return 0;
+	}
+	return myos::MemoryManage::activeMemoryManager->malloc(size);
+}
+
+void* operator new(unsigned size, void* ptr){
+	return ptr;
+}
+
+
+void* operator new[](unsigned size, void* ptr){
+	return ptr;
+}
+
+void operator delete(void* ptr){
+	if(myos::MemoryManage::activeMemoryManager != 0){
+		myos::MemoryManage::activeMemoryManager->free(ptr);
+	}
+}
+void operator delete[](void* ptr){
+	if(myos::MemoryManage::activeMemoryManager != 0){
+		myos::MemoryManage::activeMemoryManager->free(ptr);
+	}
+}
