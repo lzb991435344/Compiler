@@ -67,7 +67,11 @@ namespace myos{
 
 			virtual void Activate();
 			virtual int Reset();
-			myos::common::uint32_t handlerInterrupt(myos::common::uint32_t esp);	
+			myos::common::uint32_t handlerInterrupt(myos::common::uint32_t esp);
+
+
+			void Send(myos::common::uint8_t* buffer, int size);
+			void Receive();	
 		};
 	}
 }

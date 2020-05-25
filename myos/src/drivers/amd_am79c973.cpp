@@ -3,6 +3,9 @@
 
 
 //AMD PCnet
+//TechDocs, page 186-188
+//http://support.amd.com/TechDocs/20550.pdf
+
 using namespace myos::common;
 using namespace myos::drivers;
 using namespace myos::hardwarecommunication;
@@ -27,7 +30,7 @@ InitializationBlock initBlock;
 */
 
 void printf(char* );
-
+void printfHex(uint8_t);
 
 
 amd_am79c973::amd_am79c973(PeripherComponentInterconnectDeviceDescriptor* dev,  
@@ -162,7 +165,7 @@ uint32_t amd_am79c973::handlerInterrupt(uint32_t esp){
 	if((temp & 0x2000) == 0x2000)  printf("AMD amd_am79c973  COLLISION ERROR\n");
 	if((temp & 0x1000) == 0x1000)  printf("AMD amd_am79c973 MISSED FRAME\n");
 	if((temp & 0x0800) == 0x0800)  printf("AMD amd_am79c973  MEMORY ERROR\n");
-	if((temp & 0x0400) == 0x0400)  printf("AMD amd_am79c973 DATA RECEVED\n");
+	if((temp & 0x0400) == 0x0400)  Receive();
 	if((temp & 0x0200) == 0x0200)  printf("AMD amd_am79c973  DATA SEND\n");
 
 
@@ -173,3 +176,59 @@ uint32_t amd_am79c973::handlerInterrupt(uint32_t esp){
 
 	return esp;
 }
+
+
+void amd_am79c973::Send(uint8_t* buffer, int  size){
+	int sendDescriptor = currentSendBuffer;
+	currentSendBuffer = (currentSendBuffer + 1) % 8;
+
+	if(size > 1518){
+		size = 1518;
+	}
+
+	for(uint8_t* src = buffer + size - 1, 
+		*dst = (uint8_t*)(sendBufferDescr[sendDescriptor].address + size - 1);
+		src >= buffer; src--, dst--){
+		//copy data
+		*dst = *src;
+		sendBufferDescr[sendDescriptor].avail = 0;
+		sendBufferDescr[sendDescriptor].flags2 = 0;
+		sendBufferDescr[sendDescriptor].flags = 0x8300F000
+												| ((uint16_t)((-size) & 0xFFF));
+		//write data
+		registerAddressPort.Write(0);
+		registerDataPort.Write(0x48);
+	}
+}
+
+//20550.pdf 184 
+//first line check the Error Bit 
+//second lien check STP and ENP (start and the end of package)
+void amd_am79c973::Receive(){
+
+	printf("AMD amd_am79c973  DATA Receive\n");
+
+
+	for(; (recvBufferDescr[currentRecvBuffer].flags & 0x80000000) == 0;
+		currentRecvBuffer = (currentRecvBuffer + 1) % 8
+		){
+
+		if(!(recvBufferDescr[currentRecvBuffer].flags & 0x40000000) &&
+			(recvBufferDescr[currentRecvBuffer].flags & 0x03000000) == 0x03000000){
+
+			uint32_t size = recvBufferDescr[currentRecvBuffer].flags & 0xFFF;
+			if(size > 64){
+				size -= 4;
+			}
+
+			uint8_t* buffer = (uint8_t*)((recvBufferDescr[currentRecvBuffer].address));
+			for(int i = 0; i < size; ++i){
+				printfHex(buffer[i]);
+				printf("");
+			}
+		}
+
+		recvBufferDescr[currentRecvBuffer].flags2 = 0;
+		recvBufferDescr[currentRecvBuffer].flags = 0x8000F7FF;
+	}
+}	

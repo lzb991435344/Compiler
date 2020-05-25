@@ -20,6 +20,9 @@
 #include <gui/window.h>
 #include <multitasking.h>
 #include <memorymanagerment.h>
+#include <drivers/amd_am79c973.h>
+
+
 
 using namespace myos;
 using namespace myos::common;
@@ -293,6 +296,12 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int magicnu
 	Window window2(&destop, 40, 15, 30, 30, 0x00, 0xA8, 0x00);
 	destop.AddChild(&destop);
 #endif
+
+	//net
+	//change the DriverManage to access
+	amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
+	eth0->Send((uint8_t*)"Hello Network", 13);
+
 
 
 	interrupts.Activate();
