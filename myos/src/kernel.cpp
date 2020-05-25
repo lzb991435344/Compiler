@@ -21,7 +21,7 @@
 #include <multitasking.h>
 #include <memorymanagerment.h>
 #include <drivers/amd_am79c973.h>
-
+#include <drivers/ata.h>
 
 
 using namespace myos;
@@ -299,10 +299,33 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int magicnu
 
 	//net
 	//change the DriverManage to access
+	/*
 	amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
-	eth0->Send((uint8_t*)"Hello Network", 13);
+	eth0->Send((uint8_t*)"Hello Network", 13);*/
+
+	//interrupt 14
+	AdvancedTechnologyAttachment ata0m(0x1F0, true);
+	printf("ATA Primary Master:\n");
+	ata0m.Identify();
+
+	AdvancedTechnologyAttachment ata0s(0x1F0, false);
+	printf("ATA Primary Slave:\n");
+	ata0s.Identify();
+
+	char* atabuffer = "http://www.Algorithm.de/";
+	ata0s.Write28(0, (uint8_t*)atabuffer, 21);
+	ata0s.Flush();
+
+	ata0s.Read28(0, (uint8_t*)atabuffer, 21);
+
+	//interrupt 15
+	AdvancedTechnologyAttachment ata1m(0x170, true);
+	printf("ATA Primary Slave:\n");
+	AdvancedTechnologyAttachment ata1s(0x170, false);
 
 
+	//third:0x1E8
+	//fourth:0x168
 
 	interrupts.Activate();
 	while(1){
