@@ -73,7 +73,7 @@ programInterruptControllerSlaveCommand(0xA0),
 programInterruptControllerSlaveData(0xA1)
 {
 	this->taskManager = taskManager;
-	this->HardwareInterruptOffset = hardwareInterruptOffset;
+	this->HardwareInterruptOffset() = hardwareInterruptOffset;
 	uint32_t CodeSegment = globalDescriptorTable->CodeSegmentSelector();
 	const uint8_t IDT_INTERRUPT_GATE = 0xE;
 
@@ -106,6 +106,9 @@ programInterruptControllerSlaveData(0xA1)
 	setInterruptDescriptorTableEntry(0x11, CodeSegment, &HandleException0x11, 0, IDT_INTERRUPT_GATE);
 	setInterruptDescriptorTableEntry(0x12, CodeSegment, &HandleException0x12, 0, IDT_INTERRUPT_GATE);
 	setInterruptDescriptorTableEntry(0x13, CodeSegment, &HandleException0x13, 0, IDT_INTERRUPT_GATE);
+
+	//add 0x80
+	setInterruptDescriptorTableEntry(0x80, CodeSegment, &HandleException0x80, 0, IDT_INTERRUPT_GATE);
 
 
 	setInterruptDescriptorTableEntry(hardwareInterruptOffset + 0x00, CodeSegment, &HandleInterruptRequest0x00, 0, IDT_INTERRUPT_GATE);
@@ -190,7 +193,7 @@ uint32_t InterruptManager::DoHandlerInterrupt(uint8_t interruptNumber, uint32_t 
 	if(handlers[interruptNumber] != 0){
 		esp = handlers[interruptNumber]->handlerInterrupt(esp);
 	}//else if(interruptNumber != 0x20){
-	else if(interruptNumber != HardwareInterruptOffset){
+	else if(interruptNumber != HardwareInterruptOffset()){
 		printf("UNHANDLER INTERRUPT 0x");
 		printfHex(interruptNumber);
 		/*char* hex = "0123456789ABCDEF";
@@ -200,7 +203,7 @@ uint32_t InterruptManager::DoHandlerInterrupt(uint8_t interruptNumber, uint32_t 
 	}
 
 	//set esp
-	if(interruptNumber == HardwareInterruptOffset){
+	if(interruptNumber == HardwareInterruptOffset()){
 		esp = (uint32_t)taskManager->Schedule((CPUState*) esp);
 	}
 	

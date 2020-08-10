@@ -22,7 +22,7 @@
 #include <memorymanagerment.h>
 #include <drivers/amd_am79c973.h>
 #include <drivers/ata.h>
-
+#include <syscalls.h>
 
 using namespace myos;
 using namespace myos::common;
@@ -94,18 +94,24 @@ void printfHex(uint8_t key){
 	printf(foo);
 }
 
+//sysprintf
+
+void sysprintf(char* str){
+	asm("int $0x80" : : "a" (4), "b"(str));
+}
+
 
 //for multitasking test
 
 void taskA(){
 	while(true){
-		printf("A");
+		sysprintf("A");
 	}
 }
 
 void taskB(){
 	while(true){
-		printf("B");
+		sysprintf("B");
 	}
 }
 
@@ -186,7 +192,7 @@ public:
 
 
 
-
+extern "C" void* heap;
 
 
 
@@ -233,6 +239,8 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int magicnu
 	InterruptManager interrupts(0x20, &gdt, &taskManager);
 	//InterruptManager interrupts(&gdt);
 	//for test
+
+	SyscallHandler syscalls(&interrupts, 0x80);
 
 #ifdef GRAPHICSMODE
 	Destop destop(320, 220, 0x00, 0x00, 0xA8);

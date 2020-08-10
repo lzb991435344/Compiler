@@ -10,6 +10,7 @@ objects = obj/loader.o \
 	obj/drivers/driver.o \
 	obj/hardwarecommunication/port.o \
 	obj/hardwarecommunication/interrupts.o \
+	obj/syscalls.o\
 	obj/hardwarecommunication/interruptstubs.o \
 	obj/multitasking.o\
 	obj/drivers/amd_am79c973.o\

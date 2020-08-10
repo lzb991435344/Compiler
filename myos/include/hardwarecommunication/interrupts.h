@@ -85,6 +85,8 @@ namespace myos{
 			static void HandleInterruptRequest0x0F();
 			static void HandleInterruptRequest0x31();
 
+			static void HandleInterruptRequest0x80();
+
 			static void HandleException0x00();
 			static void HandleException0x01();
 			static void HandleException0x02();
@@ -106,6 +108,8 @@ namespace myos{
 			static void HandleException0x12();
 			static void HandleException0x13();
 
+			static void HandleException0x80();
+
 			static myos::common::uint32_t HandleInterrupt(myos::common::uint8_t interruptNumber, myos::common::uint32_t esp);
 			
 			//lesson07
@@ -119,7 +123,7 @@ namespace myos{
 			InterruptManager(myos::common::uint16_t hardwareInterruptOffset,  myos::GlobalDescriptorTable* globalDescriptorTable,
 				myos::TaskManager* taskManager);
 			~InterruptManager();
-			myos::common::uint16_t HardwareInterruptOffset;
+			myos::common::uint16_t HardwareInterruptOffset();
 
 			void Activate();
 			//lesson07

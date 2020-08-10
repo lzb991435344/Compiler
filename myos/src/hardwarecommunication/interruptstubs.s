@@ -45,6 +45,8 @@ HandleInterruptRequest 0x0E
 HandleInterruptRequest 0x0F
 HandleInterruptRequest 0x31
 
+HandleInterruptRequest 0x80
+
 #lesson08
 HandleException 0x00
 HandleException 0x01
@@ -66,6 +68,9 @@ HandleException 0x10
 HandleException 0x11
 HandleException 0x12
 HandleException 0x13
+
+#syscall
+HandleException 0x80
 
 #jump to interrupt funtion
 int_bottom:
